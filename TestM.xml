@@ -1,0 +1,955 @@
+<?xml version="1.0"?>
+<doc>
+  <assembly>
+    <name>di-api-dotnet-adtruth</name>
+  </assembly>
+  <members>
+    <member name="T:DeviceInsightApi.Properties.AdTruthDeviceInsight">
+      <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+    </member>
+    <member name="T:DeviceInsightApi.AdTruthDeviceInsightUtils">
+      <summary>
+            Exposes more information about the device described by the parent DeviceInsight instance.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.AdTruthDeviceInsightUtils.GetRtbJson(DeviceInsightApi.DeviceInsight)">
+          <summary>
+             Generates a JSON string suitable for Real-Time Bidding (RTB) systems. It is of the format: <br />
+             {<br />
+                "tdl_millis":[TDL]<br />
+                "RECIPE_VERSION_ENUM1":[DeviceInsight ID 1]<br />
+                "RECIPE_VERSION_ENUM2":[DeviceInsight ID 2]<br />
+             }<br />
+        	</summary>
+             <param name="deviceInsight"> the DeviceInsight instance to use for generation of the RTB JSON.</param>            
+             <returns> a JSON string suitable for Real-Time Bidding (RTB) systems.</returns>
+        </member>
+    <member name="T:DeviceInsightApi.DeviceInfo">
+      <summary>
+            Exposes more information about the device described by the parent DeviceInsight instance.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.DeviceInsight">
+      <summary>
+            The DeviceInsight object represents a device that is identified by the payload that you provide.
+            A payload is the information that your web tier will collect from a device when it interacts with your server.
+            Several methods are exposed that allow you to get information about the device, such as its print, or TDL.<br /><br />
+            Additionally, we provide another class, DeviceInsightUtils, as a static helper that provides further utility
+            on top of what this class provides, such as methods for gleaning a HTTP header map from an HttpContext.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsight.Shutdown">
+      <summary>
+            Stops background tasks and releases resources used by the AdTruth API.
+            As a best practice, applications should call this function when they no
+            longer require the AdTruth API.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsight.#ctor(System.Web.HttpContext,System.String,DeviceInsightApi.Configuration)">
+      <summary>
+             Constructs a new instance of DeviceInsight based on the given HTTP request
+             object, the name of the key that holds the Collector payload, and a Configuration. For example,
+             if your collector is configured to pass the payload into a hidden form field called <code>data</code>,
+             the <code>payloadParameterName</code> should be passed the value <code>"data"</code>.
+            
+             Additionally, be aware that the server timestamp is captured for you with this constructor. UTC is used by default.
+             </summary>
+      <param name="httpContext">the HttpContext instance of the current event from which the values are read.</param>
+      <param name="payloadParameterName">the name of the attribute in the HTTP request that holds the collector payload.</param>
+      <param name="configuration">configuration options used for construction.</param>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if there is an error generating the instance - this includes licensing related errors.</exception>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsight.#ctor(System.Collections.Generic.Dictionary{System.String,System.String},System.String,DeviceInsightApi.LocalTime,System.String,DeviceInsightApi.Configuration)">
+      <summary>
+            Constructs a new instance of DeviceInsight based on a given collection of HTTP headers, the Collector Payload,
+            the time on the collection server, a Browser IP, and a Configuration.
+            </summary>
+      <param name="httpHeaderMap">a map of all of the HTTP headers sent to the server (<b>NOTE</b>: <i>You can use DeviceInsightUtils to glean this information from a HttpContext</i>)</param>
+      <param name="collectorPayload">[optional] the string of the collector payload as sent by the browser.</param>
+      <param name="serverTime">the server time at the moment the data is collected (<b>NOTE</b>: <i>See LocalTime for more details.</i>)</param>
+      <param name="browserIp">[optional] the IP address of the device as seen by the server. Masked ip address is allowed with the last octect set to XXX or xxx, e.g. 1.2.3.XXX or 1.2.3.xxx</param>
+      <param name="configuration">configuration options used for construction.</param>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if there is an error generating the instance - this includes licensing related errors.</exception>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsight.#ctor(System.Collections.Generic.Dictionary{System.String,System.String},System.Collections.Generic.Dictionary{System.String,System.String},System.String,DeviceInsightApi.LocalTime,System.String,DeviceInsightApi.Configuration)">
+      <summary>
+            Constructs a new instance of DeviceInsight based on a given collection of HTTP headers, the Collector Payload,
+            the time on the collection server, a Browser IP, and a Configuration.
+            </summary>
+      <param name="httpHeaderMap">a map of all of the HTTP headers sent to the server (<b>NOTE</b>: <i>You can use DeviceInsightUtils to glean this information from a HttpContext</i>)</param>
+      <param name="httpCookieMap">a map of all of the HTTP cookies sent to the server (<b>NOTE</b>: <i>You can use DeviceInsightUtils to glean this information from a HttpContext</i>)</param>
+      <param name="collectorPayload">[optional] the string of the collector payload as sent by the browser.</param>
+      <param name="serverTime">the server time at the moment the data is collected (<b>NOTE</b>: <i>See LocalTime for more details.</i>)</param>
+      <param name="browserIp">[optional] the IP address of the device as seen by the server. Masked ip address is allowed with the last octect set to XXX or xxx, e.g. 1.2.3.XXX or 1.2.3.xxx</param>
+      <param name="configuration">configuration options used for construction.</param>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if there is an error generating the instance - this includes licensing related errors.</exception>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsight.PopulateExtraSerializationFields(System.Collections.Generic.Dictionary{System.String,System.String})">
+      <summary>
+            This is a way for leaf-implementation (AdTruth) to add in additional data to be serialized,
+            when the serializer is called.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsight.Deserialize(System.IO.Stream,DeviceInsightApi.SerializationStrategy,DeviceInsightApi.Configuration)">
+      <summary>
+             Using the given SerializationStrategy and Configuration, constructs a new DeviceInsight instance that was previously
+             stored in the stream.
+            
+             <note>The <code>null</code> Configuration usage is deprecated since 4.6.</note><br /></summary>
+      <param name="inputStream">the stream holding the serialized device.</param>
+      <param name="serializationStrategy">the SerializationStrategy to be used when attempting to deserialize the stream.</param>
+      <param name="configuration">a user-defined {@link Configuration} to override the configuration found in the stream.</param>
+      <returns>an instance of DeviceInsight deserialized from the stream.</returns>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if there is an error generating the instance.</exception>
+    </member>
+
+    <member name="T:DeviceInsightApi.InputData">
+      <summary>
+            Exposes insight into the input data given to the DeviceInsight API for echoing purposes.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.InputData.GetCollectorPayloadField(System.String)">
+      <summary>
+            Get a raw Collector Payload parameter.
+            </summary>
+      <param name="key">the name of a raw Collector Payload parameter.</param>
+      <returns>the collected value of the specified parameter.</returns>
+    </member>
+
+    <member name="T:DeviceInsightApi.TrackingPreference">
+      <summary>
+            Defines the device tracking preference values.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.RtbJsonResult">
+      <summary>
+            Parser and result object for RTB JSON.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.RtbJsonResult.#ctor(System.String)">
+      <summary>
+            Parses the given RTB JSON.
+            </summary>
+      <param name="rtbJson">a string containing RTB JSON</param>
+    </member>
+    <member name="M:DeviceInsightApi.RtbJsonResult.#ctor(System.IO.Stream)">
+      <summary>
+            Parses the given RTB JSON.
+            </summary>
+      <param name="inputStream">a stream containing RTB JSON</param>
+    </member>
+    <member name="M:DeviceInsightApi.RtbJsonResult.#ctor(System.IO.TextReader)">
+      <summary>
+            Parses the given RTB JSON.
+            </summary>
+      <param name="textReader">a text reader containing RTB JSON</param>
+    </member>
+    <member name="M:DeviceInsightApi.RtbJsonResult.TryGetTdlMillis(System.Int64@)">
+      <summary>
+            Gets the parsed TDL value
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.Configuration">
+      <summary>
+            Configuration is constructed with a ConfigurationBuilder, like so:<br /><br /><code>
+               Configuration config = new ConfigurationBuilder(new Version("VERSION_STRING_GIVEN_BY_FIELD_ENGINEER")).build();
+            </code><br /><br />
+            Configuration holds options for use with creating DeviceInsight instances. Refer to ConfigurationBuilder
+            for any and all options available.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.Configuration.Equals(System.Object)">
+      <summary>
+            Checks if this Configuration instance is equivalent to the given Configuration.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.Configuration.GetHashCode">
+      <summary>
+            Gets the hash code for this Configuration.
+            </summary>
+      <returns>the hash code for this Configuration.</returns>
+    </member>
+
+    <member name="T:DeviceInsightApi.ConfigurationBuilder">
+      <summary>
+            Provides a means to construct a Configuration object with several different options.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilder.#ctor(DeviceInsightApi.RecipeVersion[])">
+      <summary>
+            Creates a new ConfigurationBuilder. This configuration builder can be used to construct a
+            Configuration using the build() method. The configuration builder is
+            initialized with the following defaults:<br /><br />
+            salt -&gt; null (recommended)<br />
+            serialization strategy -&gt; SerializationStrategy.JSON_JSON_NET_UTF8_GZIP <br />
+            privacy cookie name and value -&gt; null <br /><br /></summary>
+      <param name="versions">the RecipeVersions to be used for a DeviceInsight initialization.</param>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilder.#ctor(System.IO.Stream)">
+      <summary>
+            Creates a new ConfigurationBuilder. This configuration builder can be used to construct a
+            Configuration using the build() method. This configuration builder is
+            initialized with a json file input stream contains the following keys and values:<br /><br />
+            versions -&gt; list of recipe names (at least one recipe name is specified)<br />
+            salt -&gt; salt value (optional)<br />
+            serializationStrategy -&gt; default is SerializationStrategy.JSON_JSON_NET_UTF8_GZIP (optional)<br />
+            qualityGradeConfigurationFile -&gt; the quality grade configuration file with full path (optional)<br /><br /></summary>
+      <param name="configStream">the configStream is a json file input stream to be used for a DeviceInsight initialization.</param>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilder.WithQualityGradeConfiguration(System.IO.Stream)">
+      <summary>
+            Tells DeviceInsight which quality score configuration to use.
+            </summary>
+      <param name="inputStream">a stream containing the quality score configuration file, given
+            to you by your DeviceInsight representative.</param>
+      <returns>
+      </returns>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilder.WithPrivacyCookie(System.String,System.String)">
+      <summary>
+            Sets the privacy cookie name and value string to be searched for in the cookie list passed in the DeviceInsight upon construction.
+            This can represent an expected opt-out or opt-in privacy cookie.
+            </summary>
+      <param name="privacyCookieName">the privacy Cookie Name.</param>
+      <param name="privacyCookieValue">the privacy Cookie Value.</param>
+      <returns>the current ConfigurationBuilder for chaining purposes.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilder.WithSalt(System.String)">
+      <summary>
+            Sets the salt string to be used for a DeviceInsightCore ID. This salt behaves just like any other cryptographic
+            salt in that two DeviceInsights with the same exact input data will produce different DeviceInsightCore IDs
+            if their salts differ. This allows a user leverage salts as a way to separate groups of devices, for example.
+            We advise against using this feature.
+            </summary>
+      <param name="salt">the salt string to be used for a DeviceInsightCore ID.</param>
+      <returns>the current ConfigurationBuilderCore for chaining purposes.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilder.WithSerializationStrategy(DeviceInsightApi.SerializationStrategy)">
+      <summary>
+            Tells DeviceInsightCore which SerializationStrategy to use.
+            </summary>
+      <param name="serializationStrategy">the SerializationStrategy to use for any DeviceInsightCore instances constructed with this configuration.</param>
+      <returns>the current ConfigurationBuilderCore for chaining purposes.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilder.Build">
+      <summary>
+            Builds a Configuration using the parameters given so far. An exception will be thrown if the
+            given data is invalid in any way.
+            </summary>
+      <returns>a Configuration that is based off the given values so far.</returns>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if the combination of given values is invalid - this includes licensing related errors.</exception>
+    </member>
+    <member name="T:DeviceInsightApi.Properties.Resources">
+      <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.DeviceInfoCore">
+      <summary>
+            Exposes more information about the device described by the parent DeviceInsightCore instance.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.TdlResolution">
+      <summary>
+            Describes the resolution at which DeviceInsightCore should report a TDL value.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.DeviceInsightCore">
+      <summary>
+        <b>NOTE TO USERS: Although it is possible to directly construct a DeviceInsightCore object, we recommend that you
+            use the DeviceInsight class instead, since it will contain additional functionality that you may need.</b>
+        <br />
+        <br />
+            The DeviceInsightCore object represents a device that is identified by the payload that you provide.
+            A payload is the information that your web tier will collect from a device when it interacts with your server.
+            Several methods are exposed that allow you to get information about the device, such as its print, or TDL.<br /><br />
+            Additionally, we provide another class, DeviceInsightUtils, as a static helper that provides further utility
+            on top of what this class provides, such as methods for gleaning a HTTP header map from an HttpContext.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsightCore.#ctor(System.Web.HttpContext,System.String,DeviceInsightApi.ConfigurationCore)">
+      <summary>
+        <b>NOTE TO USERS: Although it is possible to directly construct a DeviceInsightCore object, we recommend that you
+             use the DeviceInsight class instead, since it will contain additional functionality that you may need.</b>
+        <br />
+        <br />
+             Constructs a new instance of DeviceInsightCore based on the given HTTP request
+             object, the name of the key that holds the Collector payload, and a Configuration. For example,
+             if your collector is configured to pass the payload into a hidden form field called <code>data</code>,
+             the <code>payloadParameterName</code> should be passed the value <code>"data"</code>.
+            
+             Additionally, be aware that the server timestamp is captured for you with this constructor. UTC is used by default.
+             </summary>
+      <param name="httpContext">the HttpContext instance of the current event from which the values are read.</param>
+      <param name="payloadParameterName">the name of the attribute in the HTTP request that holds the collector payload.</param>
+      <param name="configuration">ConfigurationCore options used for construction.</param>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if there is an error generating the instance - this includes licensing related errors.</exception>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsightCore.#ctor(System.Collections.Generic.Dictionary{System.String,System.String},System.String,DeviceInsightApi.LocalTime,System.String,DeviceInsightApi.ConfigurationCore)">
+      <summary>
+        <b>NOTE TO USERS: Although it is possible to directly construct a DeviceInsightCore object, we recommend that you
+            use the DeviceInsight class instead, since it will contain additional functionality that you may need.</b>
+        <br />
+        <br />
+            Constructs a new instance of DeviceInsightCore based on a given collection of HTTP headers, the Collector Payload,
+            the time on the collection server, a Browser IP, and a Configuration.
+            </summary>
+      <param name="httpHeaderMap">a map of all of the HTTP headers sent to the server (<b>NOTE</b>: <i>You can use DeviceInsightUtils to glean this information from a HttpContext</i>)</param>
+      <param name="collectorPayload">[optional] the string of the collector payload as sent by the browser.</param>
+      <param name="serverTime">the server time at the moment the data is collected (<b>NOTE</b>: <i>See LocalTime for more details.</i>)</param>
+      <param name="browserIp">[optional] the IP address of the device as seen by the server.</param>
+      <param name="configuration">ConfigurationCore options used for construction.</param>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if there is an error generating the instance - this includes licensing related errors.</exception>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsightCore.#ctor(System.Collections.Generic.Dictionary{System.String,System.String},System.Collections.Generic.Dictionary{System.String,System.String},System.String,DeviceInsightApi.LocalTime,System.String,DeviceInsightApi.ConfigurationCore)">
+      <summary>
+        <b>NOTE TO USERS: Although it is possible to directly construct a DeviceInsightCore object, we recommend that you
+            use the DeviceInsight class instead, since it will contain additional functionality that you may need.</b>
+        <br />
+        <br />
+            Constructs a new instance of DeviceInsightCore based on a given collection of HTTP headers, the Collector Payload,
+            the time on the collection server, a Browser IP, and a Configuration.
+            </summary>
+      <param name="httpHeaderMap">a map of all of the HTTP headers sent to the server (<b>NOTE</b>: <i>You can use DeviceInsightUtils to glean this information from a HttpContext</i>)</param>
+      <param name="httpCookieMap">a map of all of the HTTP cookies sent to the server (<b>NOTE</b>: <i>You can use DeviceInsightUtils to glean this information from a HttpContext</i>)</param>
+      <param name="collectorPayload">[optional] the string of the collector payload as sent by the browser.</param>
+      <param name="serverTime">the server time at the moment the data is collected (<b>NOTE</b>: <i>See LocalTime for more details.</i>)</param>
+      <param name="browserIp">[optional] the IP address of the device as seen by the server.</param>
+      <param name="configuration">ConfigurationCore options used for construction.</param>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if there is an error generating the instance - this includes licensing related errors.</exception>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsightCore.PopulateExtraSerializationFields(System.Collections.Generic.Dictionary{System.String,System.String})">
+      <summary>
+            This is a way for leaf-implementation (AdTruth) to add in additional data to be serialized,
+            when the serializer is called.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsightCore.TryGetTdl(System.Int64@,DeviceInsightApi.TdlResolution)">
+      <summary>
+             Gets the Time Differential Link (TDL) between the server's LocalTime and the
+             browser's LocalTime.
+             
+             What is TDL? Time Differential Linking (TDL) measures the delta between the
+             browser's *local* time and the server's *local* time. But what does "local" time mean?
+             In TDL's case, local time is calculated by taking what we call the 'epoch' time - which
+             is the number of milliseconds since January 1, 1970 - and *adjusting* it by the standard
+             timezone offset of the current timezone. So, what is a "standard" timezone offset?
+             A standard timezone offset is the number of hours a timezone is offset from GMT, but
+             <b>agnostic to DST</b>. For example, MST (Mountain Time) has a standard timezone offset of -7, even
+             though the DST-adjusted offset is different for about half the year.
+            
+             Once we have computed the local times by adjusting epoch time by the standard timezone offset,
+             we subtract server time from browser time to get TDL.
+             </summary>
+      <param name="tdl">an out param that will be populated with the TDL value.</param>
+      <param name="resolution">the resolution to use when retrieving the TDL.</param>
+      <returns>
+        <code>true</code> if TDL could be calculated, false otherwise.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsightCore.Dsp(DeviceInsightApi.DeviceInsightCore)">
+      <summary>
+            Compares the current instance to a another DeviceInsight
+            and returns a Device Similarity Percentage (DSP) in the range of 0 to 1.
+            </summary>
+      <param name="other">an instance a DeviceInsightCore to compare to.</param>
+      <returns>a value in the range of 0 to 1. 0.0 corresponds to a 0% match, and 1.0 corresponds to a 100% match.</returns>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if the other DeviceInsightCore object is null.</exception>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsightCore.Serialize(System.IO.Stream)">
+      <summary>
+            Writes the DeviceInsightCore instance into a given output stream for long
+            term storage. A DeviceInsightCore object can be re-created from a store using the
+            deserialize() method.
+            </summary>
+      <param name="outputStream">output stream to be written to.</param>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if there is an error writing the instance to stream.</exception>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsightCore.Deserialize(System.IO.Stream,DeviceInsightApi.SerializationStrategy,DeviceInsightApi.ConfigurationCore)">
+      <summary>
+            Deserializes the given Stream into a DeviceInsightCore object, using the given serialization strategy and Configuration. If Configuration is not given, 
+            then the Configuration found inside the Stream will be used.
+            </summary>
+      <param name="inputStream">Stream containing a DeviceInsight object.</param>
+      <param name="serializationStrategy">the SerializationStrategy to be used when reading the Stream.</param>
+      <param name="configuration">a Configuration object which may override the Configuration found in the stream.</param>
+      <returns>the DeviceInsightCore object found in the given Stream.</returns>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if there was an error during deserialization.</exception>
+    </member>
+
+    <member name="T:DeviceInsightApi.DeviceInsightUtils">
+      <summary>
+            DeviceInsightUtils is a utility class that is meant to do some 'helper' style tasks that aren't offered in the
+            regular DeviceInsightCore object. These methods are exposed as a convenience to the user, but the user is also free
+            to create their own version of such a util, if they require different functionality than what we offer here.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsightUtils.ExtractHttpCookies(System.Web.HttpContext)">
+      <summary>
+            Extracts the list of HTTP Cookies from the HttpContext
+            and puts it into a Dictionary of String -&gt; String.
+            </summary>
+      <param name="context">an HttpContext.</param>
+      <returns>a Dictionary of String -&gt; String with the HTTP cookie name as the key and the HTTP cookie value as the value.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsightUtils.ExtractHttpHeaders(System.Web.HttpContext)">
+      <summary>
+            Extracts the list of HTTP Headers from the HttpContext
+            and puts it into a Dictionary of String -&gt; String.
+            </summary>
+      <param name="context">an HttpContext.</param>
+      <returns>a Dictionary of String -&gt; String with the HTTP Header name as the key and the HTTP Header value as the value.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsightUtils.ExtractBrowserIp(System.Web.HttpContext,System.String[])">
+      <summary>
+            Extracts the browser's IP address from a given HttpContext. This method is intended to deal with issues introduced by proxies.<br /><br />
+            This method will go through a list of HTTP header names (for example 'x-forwarded-for'), querying the HttpContext object for each value.
+            As soon as it finds a value that appears to be a public IP, it will return the value as the browser IP.<br /><br />
+            If no value is found in such a way, this method will return the value found by calling <code>context.Request.UserHostAddress</code></summary>
+      <param name="context">an HttpContext.</param>
+      <param name="headerNames">[optional] a custom list of HTTP header names to search for a browser IP with. If no list is provided, this method uses a default list.&gt;</param>
+      <returns>the browser IP for the given HttpContext.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.DeviceInsightUtils.FindBestTdlMatch(DeviceInsightApi.DeviceInsightCore,System.Collections.Generic.List{System.Int64},System.Int64)">
+      <summary>
+            Iterates over the given list of millisecond TDLs and finds the one with the closest match to the TDL found in the
+            given DeviceInsightCore object, and within the given threshold.
+            </summary>
+      <param name="deviceInsight">the DeviceInsightCore object to check all of the TDLs against.</param>
+      <param name="tdls">a list of millisecond TDLs to check the given DeviceInsight's TDL against.</param>
+      <param name="threshold">the threshold, in milliseconds, that must be met in order to find a match.</param>
+      <returns>-1 if no match was found, otherwise the index of the best matching TDL in the given list.</returns>
+    </member>
+    <member name="T:DeviceInsightApi.DeviceInsightException">
+      <summary>
+            An exception that indicates that an error is generated while executing the DeviceInsightCore API.
+            </summary>
+    </member>
+    <member name="T:DeviceInsightApi.InputDataCore">
+      <summary>
+            Exposes insight into the input data given to the DeviceInsightCore API for echoing purposes.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.InputDataCore.GetCollectorPayloadField(System.String)">
+      <summary>
+            Get a raw Collector Payload parameter.
+            </summary>
+      <param name="key">the name of a raw Collector Payload parameter.</param>
+      <returns>the collected value of the specified parameter.</returns>
+    </member>
+
+    <member name="T:DeviceInsightApi.License">
+      <summary>
+            The License class provides a static holder for a license, so that the DeviceInsight API can operate.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.License.SetCurrentLicense(System.IO.Stream)">
+      <summary>
+            Sets the current license to use for DeviceInsight. This license is saved in a static context
+            and is checked for common operations like building a Configuration, or building a DeviceInsight
+            object.
+            </summary>
+      <param name="licenseStream">a Stream holding a valid, signed license file (given to you by your DeviceInsight representative).</param>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">
+            If the stream is not readable, the license isn't signed correctly, or the license is malformed in some way.
+            </exception>
+    </member>
+    <member name="T:DeviceInsightApi.LocalTime">
+      <summary>
+        <b>NOTE TO USERS: We recommend that you always use either UtcNow or GetUtcInstance()
+            to construct your server timestamps. Constructing LocalTime directly is for advanced users only!</b>
+        <br />
+        <br />
+            Represents both the time in UTC ticks/ms and the time zone and DST information needed to
+            construct the local time for a given instant and location.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.LocalTime.#ctor(System.DateTime,System.Double,System.Boolean)">
+      <summary>
+        <b>NOTE TO USERS: We recommend that you always use either UtcNow or GetUtcInstance()
+            to construct your server timestamps. Constructing LocalTime directly is for advanced users only!</b>
+        <br />
+        <br />
+            Constructs a new instance representing the given local time.
+            </summary>
+      <param name="utcDate">the absolute time (equivalent to number of ticks).</param>
+      <param name="standardTimezoneOffset">the raw time zone offset in hours.</param>
+      <param name="dstActive">
+        <code>true</code> if daylight savings was active at the instant that this LocalTime describes.</param>
+    </member>
+    <member name="M:DeviceInsightApi.LocalTime.#ctor(System.Int64,System.Double,System.Boolean)">
+      <summary>
+        <b>NOTE TO USERS: We recommend that you always use either utcNow() or utcInstance()
+            to construct your server timestamps. Constructing LocalTime directly is for advanced users only!</b>
+        <br />
+        <br />
+            Constructs a new instance representing the given local time.
+            </summary>
+      <param name="epochMillis">the absolute time in Java epoch terms (equivalent to number of milliseconds since Jan 1 1970).</param>
+      <param name="standardTimezoneOffset">the raw time zone offset in hours.</param>
+      <param name="dstActive">
+        <code>true</code> if daylight savings was active at the instant that this LocalTime describes.</param>
+    </member>
+    <member name="M:DeviceInsightApi.LocalTime.GetUtcInstance(System.Int64)">
+      <summary>
+            An instance of LocalTime configured for the current the given Java epoch time (Offset of 0 and DST not active).
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.LocalTime.ToString">
+      <summary>
+            Converts this LocalTime instance to a human readable string, including the date, time, TZ offset and whether or not DST is active.
+            </summary>
+      <returns>a human readable string</returns>
+    </member>
+    <member name="M:DeviceInsightApi.LocalTime.Equals(System.Object)">
+      <summary>
+            Compares this LocalTime to another LocalTime object.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.LocalTime.GetHashCode">
+      <summary>
+            Gets the hash code for this LocalTime.
+            </summary>
+      <returns>the hash code for this LocalTime.</returns>
+    </member>
+
+    <member name="T:DeviceInsightApi.QualityScoreConfiguration">
+      <summary>
+            Configuration instance which is accepted by <code>Configuration.WithQualityScoreConfiguration</code>
+            when quality scores are requested.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.QualityScoreConfiguration.#ctor(System.IO.Stream)">
+      <summary>
+            Creates a new quality score configuration instance, using the given
+            quality score configuration data.
+            </summary>
+      <param name="jsonConfiguration">a stream containing the JSON configuration data</param>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if an error occurs while parsing the configuration stream</exception>
+    </member>
+    <member name="T:DeviceInsightApi.RecipeVersion">
+      <summary>
+            An enumeration that allows the user to select a specific recipe in order to generate a DeviceInsight ID.
+            </summary>
+    </member>
+
+    <member name="M:DeviceInsightApi.RecipeVersion.#ctor(System.String)">
+      <summary>
+            Creates a new instance of <code>RecipeVersion</code>, given the recipe name.
+            </summary>
+      <param name="recipeName">the recipe name string</param>
+    </member>
+    <member name="M:DeviceInsightApi.RecipeVersion.RecipeName">
+      <summary>
+            Gets the recipe name, given to the constructor.
+            </summary>
+      <returns>the recipe name</returns>
+    </member>
+    <member name="M:DeviceInsightApi.RecipeVersion.ToString">
+      <summary>
+            This implementation returns the recipe name.
+            </summary>
+      <returns>the recipe name</returns>
+    </member>
+    <member name="M:DeviceInsightApi.RecipeVersion.CompareTo(DeviceInsightApi.RecipeVersion)">
+      <summary>
+            Compares two instances of RecipeVersion. This is the equivalent of
+            calling <code>RecipeName().CompareTo(other.RecipeName())</code></summary>
+      <param name="other">the instance of RecipeVersion to compare to</param>
+      <returns>a comparison value using the recipe name strings</returns>
+    </member>
+    <member name="M:DeviceInsightApi.RecipeVersion.Equals(System.Object)">
+      <summary>
+            Checks if two instances of <code>RecipeVersion</code> are equal. This
+            will evaluate to <code>true</code> of both recipe versions were constructed
+            with the same recipe name.
+            </summary>
+      <param name="obj">the other instance to compare to</param>
+      <returns>true if the recipe names match, false otherwise</returns>
+    </member>
+    <member name="M:DeviceInsightApi.RecipeVersion.GetHashCode">
+      <summary>
+            Gets the hash code of this recipe version, based on the hash code of the
+            recipe name.
+            </summary>
+      <returns>the hash code of the recipe name</returns>
+    </member>
+    <member name="T:DeviceInsightApi.SerializationStrategy">
+      <summary>
+            Allows for the choice of different strategies to serialize a DeviceInsight instance (Gzipped/Json/etc.).
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.ConfigurationCore">
+      <summary>
+        <b>NOTE TO USERS: Although it is possible to create a ConfigurationCore object, we recommend that you
+            use the ConfigurationBuilder class (Rather than the ConfigurationBuilderCore class) to create a
+            Configuration object instead, since it will contain additional functionality that you may need.</b>
+        <br />
+        <br />
+            
+            Parent class to the Configuration class.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationCore.Equals(System.Object)">
+      <summary>
+            Checks if this ConfigurationCore instance is equivalent to the given Configuration.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationCore.GetHashCode">
+      <summary>
+            Gets the hash code for this Configuration.
+            </summary>
+      <returns>the hash code for this Configuration.</returns>
+    </member>
+
+    <member name="T:DeviceInsightApi.ConfigurationBuilderCore">
+      <summary>
+            NOTE TO USERS: Although it is possible to directly access a ConfigurationBuilderCore object, we recommend that you
+            use the ConfigurationBuilder class instead, since it will contain additional functionality that you may need.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilderCore.#ctor(DeviceInsightApi.RecipeVersion[])">
+      <summary>
+            Creates a new ConfigurationBuilderCore. This ConfigurationCore builder can be used to construct a
+            ConfigurationCore using the build() method. The ConfigurationCore builder is
+            initialized with the following defaults:<br /><br />
+            salt -&gt; null <br />
+            serialization strategy -&gt; SerializationStrategy.JSON_JSON_NET_UTF8_GZIP <br /><br /></summary>
+      <param name="versions">the list of RecipeVersions to be used for a DeviceInsightCore initialization.</param>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilderCore.#ctor(System.IO.Stream)">
+      <summary>
+            Creates a new ConfigurationBuilderCore. This configurationCore builder can be used to construct a
+            Configuration using the Corebuild() method. This configurationCore builder is
+            initialized with a json file input stream contains the following keys and values:<br /><br />
+            versions -&gt; list of recipe names (at least one recipe name is specified)<br />
+            salt -&gt; salt value (optional)<br />
+            serializationStrategy -&gt; default is SerializationStrategy.JSON_JSON_NET_UTF8_GZIP (optional)<br />
+            qualityGradeConfigurationFile -&gt; the quality grade configuration file with full path (optional)<br /><br /></summary>
+      <param name="configStream">the configStream is a json file input stream to be used for a DeviceInsightCore initialization.</param>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilderCore.CoreWithSalt(System.String)">
+      <summary>
+            Sets the salt string to be used for a DeviceInsightCore ID. This salt behaves just like any other cryptographic
+            salt in that two DeviceInsights with the same exact input data will produce different DeviceInsightCore IDs
+            if their salts differ. This allows a user leverage salts as a way to separate groups of devices, for example.
+            </summary>
+      <param name="salt">the salt string to be used for a DeviceInsightCore ID.</param>
+      <returns>the current ConfigurationBuilderCore for chaining purposes.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilderCore.CoreWithSerializationStrategy(DeviceInsightApi.SerializationStrategy)">
+      <summary>
+            Tells DeviceInsightCore which SerializationStrategy to use.
+            </summary>
+      <param name="serializationStrategy">the SerializationStrategy to use for any DeviceInsightCore instances constructed with this configuration.</param>
+      <returns>the current ConfigurationBuilderCore for chaining purposes.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilderCore.CoreWithQualityGradeConfiguration(System.IO.Stream)">
+      <summary>
+            Tells DeviceInsight which quality grade configuration to use.
+            </summary>
+      <param name="inputStream">a stream containing the quality grade configuration file, given
+            to you by your DeviceInsight representative.</param>
+      <returns>
+      </returns>
+    </member>
+    <member name="M:DeviceInsightApi.ConfigurationBuilderCore.CoreBuild">
+      <summary>
+        <b>NOTE TO USERS: Although it is possible to create a ConfigurationCore object, we recommend that you
+            use the ConfigurationBuilder class (Rather than the ConfigurationBuilderCore class) to create a
+            Configuration object instead, since it will contain additional functionality that you may need.</b>
+        <br />
+        <br />
+      </summary>
+      <returns>a ConfigurationCore that is based off the given values so far.</returns>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if the combination of given values is invalid.</exception>
+    </member>
+    <member name="T:BlockingQueue`1">
+      <summary>
+            This blocking queue class is something that we added because .NET doesn't have one unless we
+            use .NET 4.0. It is only meant to be used in a multi-producer, single-consumer scenario.
+            
+            I am extremely ashamed of having this class around. If we can find a suitable replacement from
+            a library, we should drop it in.
+            </summary>
+    </member>
+    <member name="T:DeviceInsightApi.CRC16">
+      <summary>
+            Utility class with CRC16 checksum functionality.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.CRC16.Crc16(System.String)">
+      <summary>
+            Calculates the CRC16 checksum of the given input as a UTF-8 byte stream.
+            </summary>
+      <param name="input">the input, converted to a UTF-8 byte stream</param>
+      <returns>the CRC16 checksum</returns>
+    </member>
+    <member name="M:DeviceInsightApi.CRC16.Crc16(System.String,System.String)">
+      <summary>
+            Calculates the CRC16 checksum of the given input using the specified
+            charset.
+            </summary>
+      <param name="input">the input, converted to a byte stream using the given
+            charset</param>
+      <param name="charset">the charset to use when converting the input to a byte
+            stream</param>
+      <returns>the CRC16 checksum</returns>
+    </member>
+    <member name="M:DeviceInsightApi.CRC16.Crc16(System.Byte[])">
+      <summary>
+            Calculates the CRC16 checksum of the given byte stream.
+            </summary>
+      <param name="input">the byte stream to calculate hte CRC16 checksum for</param>
+      <returns>the CRC16 checksum</returns>
+    </member>
+    <member name="M:DeviceInsightApi.URI64.Encode(System.String)">
+            Obfuscate a text string.
+            @param s input string
+            @return Obfuscated string of ASCII characters
+        </member>
+    <member name="M:DeviceInsightApi.URI64.Decode(System.String)">
+            De-obfuscate a string
+            @param encoded previously obfuscated string
+            @return Unicode plain text string
+        </member>
+
+    <member name="M:DeviceInsightApi.Utility.Unescape(System.String)">
+      <summary>
+            This method is meant to do the reverse of the Javascript escape() function.
+            Loosely defined, escape() does this:
+            
+            For 'special' characters, get the UTF-16 bytes, and encode in a percent-escaped sequence:
+            - %XX, where XX is hex and the underlying UTF-16 value is less than 256.
+            - %uXXXX[%uXXXX], where XXXX is hex and the underlying UTF-16 value is greater than or equal to 256. Surrogate pairs can happen here.
+            
+            So we must reverse this escaping action. There is no official library to use here, just home-brew it.
+            </summary>
+      <param name="escaped">a String that was originally created with a call to Javascript escape().</param>
+      <returns>an unescaped version of the passed String.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.Utility.ConvertJavaMillisToDotNetTicks(System.Int64)">
+      <summary>
+            Converts a java timestamp (millis since epoch) to the corresponding
+            amount of .NET ticks.
+            </summary>
+      <param name="javaMillis">A java timestamp (millis since epoch)</param>
+      <returns>
+      </returns>
+    </member>
+    <member name="M:DeviceInsightApi.Utility.ConvertDotNetTicksToJavaMillis(System.Int64)">
+      <summary>
+            Converts a .NET timestamp (.NET ticks) to the corresponding java epoch-based timestamp.
+            </summary>
+      <param name="ticks">The number of .NET ticks</param>
+      <returns>
+      </returns>
+    </member>
+    <member name="M:DeviceInsightApi.Utility.CalculateLevenshteinDistance(System.String,System.String)">
+      <summary>
+            An efficient implementation of the Levenshtein Distance algorithm.
+            </summary>
+      <param name="s">The original string.</param>
+      <param name="t">The new string.</param>
+      <returns>The Levenshtein distance between the old and new strings.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.Utility.FindStartOffset(System.String,System.String)">
+      <summary>
+            Gets the offset (from the start) at which the two strings become dissimilar.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.Utility.FindEndOffset(System.String,System.String)">
+      <summary>
+            Gets the offset (from the end) at which the two strings become dissimilar.
+            </summary>
+      <param name="s">
+      </param>
+      <param name="t">
+      </param>
+      <returns>
+      </returns>
+    </member>
+    <member name="M:DeviceInsightApi.LogConfig.ReadPropertiesFile(System.IO.Stream)">
+      <summary>
+            This is a helper method to allow us to read in a java properties-like file
+            in .NET. However, note that it is NOT fully compliant with the java properties
+            spec.
+            </summary>
+      <param name="inputStream">The stream to read from.</param>
+      <returns>A dictionary of key -&gt; value pairs.</returns>
+    </member>
+    <member name="T:DeviceInsightApi.Logger">
+      <summary>
+            Logger is a class that DeviceInsight provides for ease of use with providing validation data and accuracy test data
+            to your DeviceInsight representative for analysis. This logger allows you to pass in a DeviceInsight instance, along
+            with a set of optional meta-data (which might contain a benchmark ID): <br /><br /><code>logger.log(metaData, deviceInsight);</code><br /><br />
+            To construct a logger, please refer to the static <code>instantiateFromFile()</code> and
+            <code>instantiateFromStream()</code> methods. Additionally, refer to LoggerBuilder for a different way of
+            constructing a logger. <br /><br />
+            The logger itself maintains a buffer of log requests, and is constantly writing requests out from the buffer to disk.
+            Once this buffer fills up, additional requests to <code>log()</code> will block. If you don't want blocking behavior,
+            refer to <code>tryLog()</code> to make a non-blocking request to the logger. <b>Because the logger is thread-safe, and
+            it maintains a background thread to write to the disk, be careful to only instantiate one (or very few), 
+            and have them be shared by many threads.</b><br /><br />
+            Finally, if you wish to let the logger know that your system is shutting down, you can make a call to
+            <code>shutdown()</code>. This call blocks until the logger finishes writing all of the log requests in its buffer
+            to disk. Being shut down also causes the logger to throw an exception for any new calls
+            to <code>log()</code> or <code>tryLog()</code>. If you are trying to do a fast shutdown, make a call to
+            <code>shutdownNow()</code> instead. The logger will immediately die in this case, but any log requests
+            waiting in the buffer will <b>not</b> get flushed to disk.
+            </summary>
+    </member>
+
+    <member name="M:DeviceInsightApi.Logger.InstantiateFromStream(System.IO.Stream)">
+      <summary>
+            Creates an instance of a Logger from a .properties file stream. The format of the stream is expected
+            to match that of a Java .properties file. The following keys are supported:<br /><br /><ul><li>logDir -&gt; Relative or absolute path to a directory which will contain the log files.</li><li>maxLogFileSize -&gt; The maximum size, in bytes, that a log file can become before it is rolled over.</li><li>bufferCapacity -&gt; The number of log requests that the logger can hold before it rejects additional requests.</li></ul><br />
+            Underneath the covers, this constructor uses a LoggerBuilder to construct the logger. Please see LoggerBuilder's
+            JavaDoc for more information.
+            </summary>
+      <param name="stream">a stream containing a log configuration, in .properties format.</param>
+      <returns>an instance of a Logger configured with the properties found in the configuration stream.</returns>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if there was an error creating the Logger from the given configuration.</exception>
+    </member>
+    <member name="M:DeviceInsightApi.Logger.InstantiateFromFile(System.String)">
+      <summary>
+            Creates an instance of a Logger from a .properties file. The format of the file is expected
+            to match that of a Java .properties file. The following keys are supported:<br /><br /><ul><li>logDir -&gt; Relative or absolute path to a directory which will contain the log files.</li><li>maxLogFileSize -&gt; The maximum size, in bytes, that a log file can become before it is rolled over.</li><li>bufferCapacity -&gt; The number of log requests that the logger can hold before it rejects additional requests.</li></ul><br />
+            Underneath the covers, this constructor uses a {@link LoggerBuilder} to construct the logger. Please see {@link LoggerBuilder}'s
+            JavaDoc for more information.
+            </summary>
+      <param name="filePath">path to a file containing a log configration, in .properties format.</param>
+      <returns>an instance of a Logger configured with the properties found in the configuration file.</returns>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if there was an error creating the Logger from the given configuration.</exception>
+    </member>
+    <member name="M:DeviceInsightApi.Logger.ToLogString(System.Collections.Generic.Dictionary{System.String,System.String},DeviceInsightApi.DeviceInsightCore)">
+      <summary>Without logging any data to an actual file, returns the log line for the given DeviceInsight instance
+            and optional metadata. This method is provided as a convenience to those users who wish to still log DeviceInsight
+            data with a format that their DeviceInsight representative can easily validate, while still using their own
+            pre-existing logging framework.</summary>
+      <param name="metaData">a {@link Map} of extra data that you wish to log alongside the given {@link DeviceInsightCore} object.
+               This map may not have null keys. If you have a benchmark ID you wish to provide in the metaData,
+               please use the following static field as the key: <code>Logger.METADATA_KEY_BENCHMARK_ID</code>.</param>
+      <param name="deviceInsight">the DeviceInsight object that you wish to log.</param>
+      <returns>The log line that describes the given input. It is JSON-formatted,
+               and is guaranteed to not have any newlines in it.</returns>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">if the metaData map is malformed (has null keys), or
+               the DeviceInsightCore object was null.</exception>
+    </member>
+    <member name="M:DeviceInsightApi.Logger.TryLog(System.Collections.Generic.Dictionary{System.String,System.String},DeviceInsightApi.DeviceInsightCore,System.Int32)">
+      <summary>
+            Attempts to add a log request to this Logger's buffer. Waits as most <code>timeoutMillis</code> milliseconds
+            until it gives up.
+            </summary>
+      <param name="metaData">
+            a {@link Dictionary} of extra data that you wish to log alongside the given DeviceInsight object.
+            This map may not have null keys. If you have a benchmark ID you wish to provide in the metaData,
+            please use the following static field as the key: <code>Logger.METADATA_KEY_BENCHMARK_ID</code>.
+            </param>
+      <param name="deviceInsight">the DeviceInsight object that you wish to log.</param>
+      <param name="timeoutMillis">
+            the maximum number of milliseconds to wait before giving up. A value of 0 or less than 0 here
+            means that we will attempt to put the request in the buffer and return immediately.
+            </param>
+      <returns>
+        <code>true</code> if the log request was accepted by the Logger, false if the request timed out.</returns>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">
+            if the Logger is already shut down,
+            the DeviceInsight object was null,
+            or the thread was interrupted while waiting for the logger buffer to free up slots.
+            </exception>
+    </member>
+    <member name="M:DeviceInsightApi.Logger.Log(System.Collections.Generic.Dictionary{System.String,System.String},DeviceInsightApi.DeviceInsightCore)">
+      <summary>
+            Adds a log request to this {@link Logger}'s buffer. If the {@link Logger}'s buffer is full, this call blocks until
+            space is available.
+            </summary>
+      <param name="metaData">
+            a {@link Dictionary} of extra data that you wish to log alongside the given DeviceInsight object.
+            This map may not have null keys. If you have a benchmark ID you wish to provide in the metaData,
+            please use the following static field as the key: <code>Logger.METADATA_KEY_BENCHMARK_ID</code>.
+            </param>
+      <param name="deviceInsight">the DeviceInsight object that you wish to log.</param>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">
+            if the Logger is already shut down,
+            the DeviceInsight object was null,
+            or the thread was interrupted while waiting for the logger buffer to free up slots.
+            </exception>
+    </member>
+    <member name="M:DeviceInsightApi.Logger.Shutdown">
+      <summary>
+            Signals the Logger to flush all of its current buffer contents to disk, GZip the current log file, and
+            stop writing to disk. Blocks until all of these have been completed.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.Logger.ShutdownNow">
+      <summary>
+            Signals the Logger to immediately stop writing to disk. <b>If this shutdown method is used,
+            it is not guaranteed that all previous log requests will have been written to disk</b>.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.Logger.LoggerThreadFunction">
+      <summary>
+            This is the main DeviceInsight logger thread function. It consumes LogRequests from the queue
+            and writes them into our log.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.LoggerBuilder">
+      <summary>
+            This class allows you to build a Logger programmatically, with several different configuration options.
+            The typical use-case looks like this:<br /><br /><code>
+               Logger logger = new LoggerBuilder(new File("my/logging/dir")<br />
+                  .withMaxLogFileSize(5000000)<br />
+                  .withBufferCapacity(100)<br />
+                  .build()<br /></code><br />
+            The call to the <code>build()</code> method produces DeviceInsightExceptions for erroneous input. For example,
+            an exception will be thrown if the logging directory does not exist, or if the maxLogFileSize is too large.
+            </summary>
+    </member>
+    <member name="M:DeviceInsightApi.LoggerBuilder.#ctor(System.String)">
+      <summary>
+            Constructs a LoggerBuilder, configured with the given logging Directory.
+            </summary>
+      <param name="loggingDirectory">
+            the directory to write log files underneath. This directory must exist beforehand -
+            DeviceInsight will not create this directory for you.
+            </param>
+    </member>
+    <member name="M:DeviceInsightApi.LoggerBuilder.WithMaxLogFileSize(System.Int32)">
+      <summary>
+            Sets the maximum log file size (in bytes) that a log file can have before it is rolled over.
+            This value must be between 1,000,000 and 2,000,000,000 (inclusive). 2,000,000,000 is the default.
+            </summary>
+      <param name="maxLogFileSize">the maximum log file size (in bytes) that a log file can have before it is rolled over.</param>
+      <returns>the current LoggerBuilder for chaining purposes.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.LoggerBuilder.WithBufferCapacity(System.Int32)">
+      <summary>
+            Sets the buffer capacity for this LoggerBuilder. The buffer capacity limits how many log requests can be
+            waiting in memory to be written out to disk. This value must be between 10 and 100,000 (inclusive). 1,000 is the
+            default.
+            </summary>
+      <param name="bufferCapacity">the buffer capacity for this LoggerBuilder.</param>
+      <returns>the current LoggerBuilder for chaining purposes.</returns>
+    </member>
+    <member name="M:DeviceInsightApi.LoggerBuilder.Build">
+      <summary>
+            Constructs a new Logger, using the given configuration parameters. If any of the parameters are invalid,
+            or the Logger itself can't be constructed for any other reason, then a DeviceInsightException is thrown.
+            </summary>
+      <returns>a new Logger, using the given configuration parameters.</returns>
+      <exception cref="T:DeviceInsightApi.DeviceInsightException">
+            if any of the parameters are invalid, or the {@link Logger} itself can't be constructed for any other reason.
+            </exception>
+    </member>
+  </members>
+</doc>

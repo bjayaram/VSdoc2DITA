@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<doc>
+  <assembly>
+    <name>Test member element for a class</name>
+  </assembly>
+  <members>
+    <member name="T:DeviceInsightApi.Properties.AdTruthDeviceInsight">
+      <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+    </member>
+    <member name="T:DeviceInsightApi.AdTruthDeviceInsightUtils">
+      <summary>
+            Exposes more information about the device described by the parent DeviceInsight instance.
+            </summary>
+    </member>
+    <member name="T:DeviceInsightApi.DeviceInfo">
+      <summary>
+            Exposes more information about the device described by the parent DeviceInsight instance.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.DeviceInsight">
+      <summary>
+            The DeviceInsight object represents a device that is identified by the payload that you provide.
+            A payload is the information that your web tier will collect from a device when it interacts with your server.
+            Several methods are exposed that allow you to get information about the device, such as its print, or TDL.<br /><br />
+            Additionally, we provide another class, DeviceInsightUtils, as a static helper that provides further utility
+            on top of what this class provides, such as methods for gleaning a HTTP header map from an HttpContext.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.InputData">
+      <summary>
+            Exposes insight into the input data given to the DeviceInsight API for echoing purposes.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.TrackingPreference">
+      <summary>
+            Defines the device tracking preference values.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.RtbJsonResult">
+      <summary>
+            Parser and result object for RTB JSON.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.Configuration">
+      <summary>
+            Configuration is constructed with a ConfigurationBuilder, like so:<br /><br /><code>
+               Configuration config = new ConfigurationBuilder(new Version("VERSION_STRING_GIVEN_BY_FIELD_ENGINEER")).build();
+            </code><br /><br />
+            Configuration holds options for use with creating DeviceInsight instances. Refer to ConfigurationBuilder
+            for any and all options available.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.ConfigurationBuilder">
+      <summary>
+            Provides a means to construct a Configuration object with several different options.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.Properties.Resources">
+      <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.DeviceInfoCore">
+      <summary>
+            Exposes more information about the device described by the parent DeviceInsightCore instance.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.TdlResolution">
+      <summary>
+            Describes the resolution at which DeviceInsightCore should report a TDL value.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.DeviceInsightCore">
+      <summary>
+        <b>NOTE TO USERS: Although it is possible to directly construct a DeviceInsightCore object, we recommend that you
+            use the DeviceInsight class instead, since it will contain additional functionality that you may need.</b>
+        <br />
+        <br />
+            The DeviceInsightCore object represents a device that is identified by the payload that you provide.
+            A payload is the information that your web tier will collect from a device when it interacts with your server.
+            Several methods are exposed that allow you to get information about the device, such as its print, or TDL.<br /><br />
+            Additionally, we provide another class, DeviceInsightUtils, as a static helper that provides further utility
+            on top of what this class provides, such as methods for gleaning a HTTP header map from an HttpContext.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.DeviceInsightUtils">
+      <summary>
+            DeviceInsightUtils is a utility class that is meant to do some 'helper' style tasks that aren't offered in the
+            regular DeviceInsightCore object. These methods are exposed as a convenience to the user, but the user is also free
+            to create their own version of such a util, if they require different functionality than what we offer here.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.DeviceInsightException">
+      <summary>
+            An exception that indicates that an error is generated while executing the DeviceInsightCore API.
+            </summary>
+    </member>
+    <member name="T:DeviceInsightApi.InputDataCore">
+      <summary>
+            Exposes insight into the input data given to the DeviceInsightCore API for echoing purposes.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.License">
+      <summary>
+            The License class provides a static holder for a license, so that the DeviceInsight API can operate.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.LocalTime">
+      <summary>
+        <b>NOTE TO USERS: We recommend that you always use either UtcNow or GetUtcInstance()
+            to construct your server timestamps. Constructing LocalTime directly is for advanced users only!</b>
+        <br />
+        <br />
+            Represents both the time in UTC ticks/ms and the time zone and DST information needed to
+            construct the local time for a given instant and location.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.QualityScoreConfiguration">
+      <summary>
+            Configuration instance which is accepted by <code>Configuration.WithQualityScoreConfiguration</code>
+            when quality scores are requested.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.RecipeVersion">
+      <summary>
+            An enumeration that allows the user to select a specific recipe in order to generate a DeviceInsight ID.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.ConfigurationCore">
+      <summary>
+        <b>NOTE TO USERS: Although it is possible to create a ConfigurationCore object, we recommend that you
+            use the ConfigurationBuilder class (Rather than the ConfigurationBuilderCore class) to create a
+            Configuration object instead, since it will contain additional functionality that you may need.</b>
+        <br />
+        <br />
+            
+            Parent class to the Configuration class.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.ConfigurationBuilderCore">
+      <summary>
+            NOTE TO USERS: Although it is possible to directly access a ConfigurationBuilderCore object, we recommend that you
+            use the ConfigurationBuilder class instead, since it will contain additional functionality that you may need.
+            </summary>
+    </member>
+
+<!-- 
+    <member name="T:BlockingQueue`1">
+      <summary>
+            This blocking queue class is something that we added because .NET doesn't have one unless we
+            use .NET 4.0. It is only meant to be used in a multi-producer, single-consumer scenario.
+            
+            I am extremely ashamed of having this class around. If we can find a suitable replacement from
+            a library, we should drop it in.
+            </summary>
+    </member>
+ -->
+    <member name="T:DeviceInsightApi.CRC16">
+      <summary>
+            Utility class with CRC16 checksum functionality.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.Logger">
+      <summary>
+            Logger is a class that DeviceInsight provides for ease of use with providing validation data and accuracy test data
+            to your DeviceInsight representative for analysis. This logger allows you to pass in a DeviceInsight instance, along
+            with a set of optional meta-data (which might contain a benchmark ID): <br /><br /><code>logger.log(metaData, deviceInsight);</code><br /><br />
+            To construct a logger, please refer to the static <code>instantiateFromFile()</code> and
+            <code>instantiateFromStream()</code> methods. Additionally, refer to LoggerBuilder for a different way of
+            constructing a logger. <br /><br />
+            The logger itself maintains a buffer of log requests, and is constantly writing requests out from the buffer to disk.
+            Once this buffer fills up, additional requests to <code>log()</code> will block. If you don't want blocking behavior,
+            refer to <code>tryLog()</code> to make a non-blocking request to the logger. <b>Because the logger is thread-safe, and
+            it maintains a background thread to write to the disk, be careful to only instantiate one (or very few), 
+            and have them be shared by many threads.</b><br /><br />
+            Finally, if you wish to let the logger know that your system is shutting down, you can make a call to
+            <code>shutdown()</code>. This call blocks until the logger finishes writing all of the log requests in its buffer
+            to disk. Being shut down also causes the logger to throw an exception for any new calls
+            to <code>log()</code> or <code>tryLog()</code>. If you are trying to do a fast shutdown, make a call to
+            <code>shutdownNow()</code> instead. The logger will immediately die in this case, but any log requests
+            waiting in the buffer will <b>not</b> get flushed to disk.
+            </summary>
+    </member>
+
+    <member name="T:DeviceInsightApi.LoggerBuilder">
+      <summary>
+            This class allows you to build a Logger programmatically, with several different configuration options.
+            The typical use-case looks like this:<br /><br /><code>
+               Logger logger = new LoggerBuilder(new File("my/logging/dir")
+                  .withMaxLogFileSize(5000000)
+                  .withBufferCapacity(100)
+                  .build()</code><br />
+            The call to the <code>build()</code> method produces DeviceInsightExceptions for erroneous input. For example,
+            an exception will be thrown if the logging directory does not exist, or if the maxLogFileSize is too large.
+            </summary>
+    </member>
+
+  </members>
+</doc>
